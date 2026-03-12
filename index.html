@@ -376,6 +376,18 @@
 
     .grid-wrap { position: relative; min-height: 100px; }
 
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
+
     @media (max-width: 480px) {
       body { padding: 16px 12px 48px; }
       .logo { font-size: 1.25rem; }
@@ -386,6 +398,7 @@
 </head>
 <body>
 <div class="container">
+  <h1 class="sr-only">Free Takuzu — Play Binary Puzzle Online</h1>
   <header>
     <div class="logo">Free Takuzu</div>
     <div class="tagline">Binary logic puzzle — fill the grid with 0s and 1s</div>
@@ -879,7 +892,7 @@ function checkBoard() {
   if (hasErr) {
     setStatus('Some cells are incorrect.', 'err');
   } else if (!G.grid.includes(EMPTY)) {
-    setStatus('No errors so far.', '');
+    checkWin();
   } else {
     setStatus('Looking good — keep going.', '');
   }
