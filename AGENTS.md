@@ -33,7 +33,7 @@ Embed or link when:
 
 - Domain: freetakuzu.com
 - Radicchio hostname: freetakuzu.radicchio.page
-- GitHub: ruemic/freetakuzu
+- GitHub: sheetgenius/freetakuzu
 - Deploy: git push to main → webhook → Radicchio
 
 ## Related properties
