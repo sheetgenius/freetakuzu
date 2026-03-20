@@ -1,0 +1,13 @@
+{
+  "api_base": "https://radicchio.fly.dev",
+  "files": [
+    "index.html",
+    "og.png",
+    "og.svg",
+    "robots.txt",
+    "sitemap.xml"
+  ],
+  "hostname": "freetakuzu.com",
+  "site_id": 38,
+  "site_name": "FreeTakuzu"
+}

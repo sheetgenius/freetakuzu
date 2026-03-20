@@ -1,0 +1,186 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "base64"
+require "json"
+require "net/http"
+require "pathname"
+require "uri"
+
+class RadicchioCli
+  DEFAULT_MANIFEST = "radicchio.json"
+
+  def initialize(argv)
+    @argv = argv.dup
+    @manifest_path = DEFAULT_MANIFEST
+    @command = nil
+  end
+
+  def run
+    parse!
+    manifest = load_manifest
+
+    case @command
+    when "plan"
+      puts JSON.pretty_generate(plan(manifest))
+    when "deploy"
+      ensure_token!
+      puts JSON.pretty_generate(deploy(manifest))
+    when "status"
+      ensure_token!
+      puts JSON.pretty_generate(status(manifest))
+    else
+      abort usage
+    end
+  end
+
+  private
+
+  def parse!
+    while @argv.first&.start_with?("--")
+      flag = @argv.shift
+      case flag
+      when "--manifest"
+        @manifest_path = @argv.shift || abort("--manifest requires a path")
+      when "--help", "-h"
+        puts usage
+        exit 0
+      else
+        abort "Unknown option: #{flag}\n\n#{usage}"
+      end
+    end
+
+    @command = @argv.shift || "plan"
+  end
+
+  def usage
+    <<~TEXT
+      Usage: Scripts/radicchio [--manifest path] <plan|deploy|status>
+
+      Commands:
+        plan    Show the files and byte counts that would be deployed
+        deploy  Upload the manifest files to the configured Radicchio site
+        status  Show the current Radicchio site record for this repo
+
+      Environment:
+        RADICCHIO_API_TOKEN  Radicchio API bearer token
+    TEXT
+  end
+
+  def load_manifest
+    path = Pathname.new(@manifest_path)
+    abort "Manifest not found: #{path}" unless path.exist?
+
+    JSON.parse(path.read).tap do |manifest|
+      abort "Manifest must include site_id" unless manifest["site_id"]
+      abort "Manifest must include files[]" unless manifest["files"].is_a?(Array) && manifest["files"].any?
+    end
+  rescue JSON::ParserError => e
+    abort "Invalid manifest JSON: #{e.message}"
+  end
+
+  def plan(manifest)
+    payload = build_payload(manifest)
+    {
+      site_id: manifest["site_id"],
+      hostname: manifest["hostname"],
+      api_base: api_base(manifest),
+      file_count: payload[:files].size,
+      total_bytes: payload[:total_bytes],
+      files: payload[:descriptors]
+    }
+  end
+
+  def deploy(manifest)
+    payload = build_payload(manifest)
+    result = call_tool(manifest, "radicchio_deploy", site_id: manifest["site_id"], files: payload[:files])
+
+    {
+      status: "deployed",
+      site_id: manifest["site_id"],
+      hostname: manifest["hostname"],
+      file_count: payload[:files].size,
+      total_bytes: payload[:total_bytes],
+      deploy: result
+    }
+  end
+
+  def status(manifest)
+    list = call_tool(manifest, "radicchio_list")
+    site = Array(list).find { |entry| entry["site_id"].to_i == manifest["site_id"].to_i }
+    abort "Site #{manifest["site_id"]} not found in Radicchio list response" unless site
+
+    if manifest["hostname"]
+      hostname = call_tool(manifest, "radicchio_check_hostname", hostname: manifest["hostname"])
+      site = site.merge("hostname_status" => hostname)
+    end
+
+    site
+  end
+
+  def ensure_token!
+    abort "RADICCHIO_API_TOKEN is required" if ENV["RADICCHIO_API_TOKEN"].to_s.empty?
+  end
+
+  def api_base(manifest)
+    manifest["api_base"].to_s.empty? ? "https://radicchio.fly.dev" : manifest["api_base"]
+  end
+
+  def build_payload(manifest)
+    files = {}
+    descriptors = []
+    total_bytes = 0
+
+    manifest.fetch("files").each do |relative|
+      path = Pathname.new(relative)
+      abort "Missing deploy file: #{relative}" unless path.file?
+
+      bytes = path.binread
+      total_bytes += bytes.bytesize
+      files[relative] = encode(bytes)
+      descriptors << { path: relative, bytes: bytes.bytesize }
+    end
+
+    {
+      files: files,
+      descriptors: descriptors,
+      total_bytes: total_bytes
+    }
+  end
+
+  def encode(bytes)
+    text = bytes.dup.force_encoding("UTF-8")
+    return text if text.valid_encoding?
+
+    "__b64__:#{Base64.strict_encode64(bytes)}"
+  end
+
+  def call_tool(manifest, name, arguments = {})
+    uri = URI("#{api_base(manifest)}/api/tools/call")
+    request = Net::HTTP::Post.new(uri)
+    request["Authorization"] = "Bearer #{ENV.fetch("RADICCHIO_API_TOKEN")}"
+    request["Content-Type"] = "application/json"
+    request.body = JSON.generate({ name: name, arguments: arguments })
+
+    response = Net::HTTP.start(uri.host, uri.port, use_ssl: true, open_timeout: 10, read_timeout: 120) do |http|
+      http.request(request)
+    end
+
+    parsed = JSON.parse(response.body)
+    abort "Radicchio error: #{parsed["error"]}" if parsed["error"]
+
+    result = parsed["result"]
+    result = result.first if result.is_a?(Array)
+    abort "Unexpected empty result from #{name}" if result.nil? || result == {}
+
+    result
+  rescue JSON::ParserError => e
+    abort "Invalid JSON from Radicchio: #{e.message}"
+  rescue KeyError => e
+    abort e.message
+  rescue StandardError => e
+    abort "Radicchio request failed: #{e.message}"
+  end
+end
+
+RadicchioCli.new(ARGV).run
