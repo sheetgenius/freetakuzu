@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+test -n "${VERIFY_BASE_URL:-}" || {
+  echo "VERIFY_BASE_URL is required" >&2
+  exit 1
+}
+
+test -n "${EXPECTED_GIT_SHA:-}" || {
+  echo "EXPECTED_GIT_SHA is required" >&2
+  exit 1
+}
+
+TIMEOUT_SECONDS="${VERIFY_TIMEOUT_SECONDS:-900}"
+POLL_SECONDS="${VERIFY_POLL_SECONDS:-5}"
+SMOKE_PATHS="${VERIFY_SMOKE_PATHS:-/}"
+HEALTH_URL="${VERIFY_BASE_URL%/}/up"
+deadline=$((SECONDS + TIMEOUT_SECONDS))
+matched=0
+
+parse_git_sha() {
+  python3 -c 'import json, sys; data = json.load(sys.stdin); print(data.get("git_sha", ""), end="")' 2>/dev/null || true
+}
+
+while [ "$SECONDS" -lt "$deadline" ]; do
+  body="$(curl -fsS "$HEALTH_URL" 2>/dev/null || true)"
+  sha=""
+
+  if [ -n "$body" ]; then
+    sha="$(printf '%s' "$body" | parse_git_sha)"
+  fi
+
+  if [ "$sha" = "$EXPECTED_GIT_SHA" ]; then
+    matched=$((matched + 1))
+    if [ "$matched" -ge 2 ]; then
+      break
+    fi
+  else
+    matched=0
+  fi
+
+  sleep "$POLL_SECONDS"
+done
+
+if [ "$matched" -lt 2 ]; then
+  echo "Timed out waiting for $HEALTH_URL to report git_sha=$EXPECTED_GIT_SHA" >&2
+  exit 1
+fi
+
+OLDIFS="$IFS"
+IFS=','
+read -r -a paths <<< "$SMOKE_PATHS"
+IFS="$OLDIFS"
+
+for path in "${paths[@]}"; do
+  test -n "$path" || continue
+  curl -fsS -o /dev/null "${VERIFY_BASE_URL%/}${path}"
+done
