@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Takuzu Strategies — How to Solve Binary Puzzles (Binairo Tips)</title>
+  <meta name="description" content="Learn the four core Takuzu solving strategies: adjacent pair, sandwich, balance counting, and duplicate prevention. Master these techniques to solve any Binairo puzzle.">
+  <meta name="keywords" content="takuzu strategies, how to solve takuzu, binairo tips, binary puzzle solving, takuzu techniques, binairo strategies, takuzu guide">
+  <meta property="og:title" content="Takuzu Strategies — How to Solve Binary Puzzles">
+  <meta property="og:description" content="Four core techniques to solve any Takuzu (Binairo) puzzle without guessing. Adjacent pair, sandwich, balance counting, and duplicate prevention.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://freetakuzu.com/strategies">
+  <meta property="og:image" content="https://freetakuzu.com/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://freetakuzu.com/og.png">
+  <meta name="twitter:title" content="Takuzu Strategies — How to Solve Binary Puzzles">
+  <meta name="twitter:description" content="Four core techniques to solve any Takuzu puzzle without guessing.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://freetakuzu.com/strategies">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NDZRH5QDQP"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-NDZRH5QDQP');
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Takuzu Strategies — How to Solve Binary Puzzles Without Guessing",
+    "description": "Four core Takuzu (Binairo) solving techniques: adjacent pair, sandwich, balance counting, and duplicate prevention. Master these to solve any binary puzzle.",
+    "url": "https://freetakuzu.com/strategies",
+    "author": {
+      "@type": "Organization",
+      "name": "Free Takuzu",
+      "url": "https://freetakuzu.com"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Free Takuzu",
+      "url": "https://freetakuzu.com"
+    },
+    "mainEntityOfPage": "https://freetakuzu.com/strategies"
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is the most useful Takuzu strategy for beginners?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Start with the adjacent pair rule: any two identical digits sitting next to each other force both neighbors to be the opposite value. This creates a chain reaction that quickly fills many cells. Apply this rule to every row and column before trying anything else."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I use balance counting to solve Takuzu?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Every row and column must have exactly equal numbers of 0s and 1s. In an 8x8 grid, that means four 0s and four 1s per row. Count the filled cells in each row and column. If a row already has four 1s, every remaining empty cell in that row must be 0. This often fills two or three cells at once."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the sandwich rule in Takuzu?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The sandwich rule applies when two identical digits have exactly one empty cell between them: for example 1, ?, 1. The cell in the middle must be the opposite digit (0 in this case), because placing a 1 there would create three consecutive 1s, which violates the rules."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How does duplicate prevention help solve Takuzu?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No two rows (or columns) may be identical. If a nearly-complete row has only one empty cell remaining, compare it against every completed row. If it matches a completed row in every position except the empty one, the empty cell must be the opposite of what the completed row has there. This forces a value without any counting."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "In what order should I apply Takuzu strategies?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Work in this order: (1) Adjacent pair — scan all rows and columns for two identical digits in a row. (2) Sandwich — scan for identical digits with one gap between them. (3) Balance counting — check if any row or column has reached its limit of one digit. (4) Duplicate prevention — check nearly-complete rows against completed ones. Repeat until the puzzle is solved. Most puzzles require only two or three passes."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do I ever need to guess in Takuzu?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. Every well-constructed Takuzu puzzle is solvable through logical deduction alone. The four strategies above — adjacent pair, sandwich, balance counting, and duplicate prevention — are sufficient to solve any valid puzzle. If you feel stuck, you have missed a forced move. Re-scan every row and column from the beginning."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #1a1814;
+      --surface: #221f1b;
+      --surface-2: #2a2620;
+      --border: #2e2a24;
+      --border-2: #3a3530;
+      --text: #e0d8c8;
+      --muted: #8f8577;
+      --accent: #c8a84e;
+      --accent-dim: #a8883e;
+      --green: #6abf69;
+      --red: #e05a4e;
+      --mono: 'SF Mono', 'Fira Code', 'Consolas', 'Menlo', monospace;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 14px;
+      line-height: 1.6;
+      padding: 24px 16px 64px;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .container { max-width: 640px; margin: 0 auto; }
+
+    header { margin-bottom: 24px; }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+    }
+
+    .tagline {
+      color: var(--muted);
+      font-size: 0.83rem;
+      margin-top: 3px;
+    }
+
+    .breadcrumb {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .breadcrumb a { color: var(--muted); }
+    .breadcrumb a:hover { color: var(--accent); text-decoration: none; }
+    .breadcrumb span { margin: 0 6px; }
+
+    h1 {
+      font-size: 1.1rem;
+      color: var(--text);
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
+    .intro {
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.75;
+      margin-bottom: 32px;
+    }
+
+    .intro strong { color: var(--text); }
+
+    /* Strategy sections */
+    .section {
+      margin-top: 40px;
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+    }
+
+    .section-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
+    }
+
+    .section h2 {
+      font-size: 0.95rem;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+
+    .body-text {
+      color: var(--muted);
+      line-height: 1.8;
+      margin-bottom: 14px;
+      font-size: 0.86rem;
+    }
+
+    .body-text strong { color: var(--text); }
+
+    /* Grid example */
+    .example {
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      padding: 16px;
+      margin: 16px 0;
+      font-size: 0.83rem;
+    }
+
+    .example-label {
+      color: var(--muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    .grid-row {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 4px;
+      align-items: center;
+    }
+
+    .cell-eg {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.88rem;
+      border: 1px solid var(--border-2);
+      background: var(--bg);
+    }
+
+    .cell-eg.c0 { color: var(--muted); }
+    .cell-eg.c1 { color: var(--accent); }
+    .cell-eg.clue { background: var(--surface-2); }
+    .cell-eg.clue.c0 { color: #b0a898; }
+    .cell-eg.clue.c1 { color: var(--accent); }
+    .cell-eg.forced { background: rgba(200, 168, 78, 0.12); border-color: var(--accent); color: var(--accent); }
+    .cell-eg.empty { color: transparent; }
+
+    .arrow { color: var(--muted); margin: 0 6px; font-size: 0.8rem; }
+    .forced-label { color: var(--accent); font-size: 0.78rem; margin-left: 10px; align-self: center; }
+
+    /* Rule steps */
+    .steps {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .steps li {
+      display: flex;
+      gap: 12px;
+    }
+
+    .step-n { color: var(--accent); font-weight: 700; min-width: 20px; }
+    .step-t { color: var(--muted); font-size: 0.86rem; line-height: 1.7; }
+    .step-t strong { color: var(--text); }
+
+    /* Summary table */
+    .summary {
+      border: 1px solid var(--border-2);
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.81rem;
+      margin-top: 14px;
+    }
+
+    .summary th {
+      background: var(--surface-2);
+      color: var(--accent);
+      padding: 8px 10px;
+      text-align: left;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border-2);
+    }
+
+    .summary td {
+      padding: 7px 10px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    .summary td strong { color: var(--text); }
+    .summary tr:last-child td { border-bottom: none; }
+
+    /* FAQ */
+    .faq { display: flex; flex-direction: column; gap: 20px; }
+
+    .faq-item h3 {
+      font-size: 0.86rem;
+      color: var(--text);
+      margin-bottom: 5px;
+    }
+
+    .faq-item p {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 0.83rem;
+    }
+
+    /* CTA */
+    .cta {
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      padding: 20px;
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    .cta p {
+      color: var(--muted);
+      font-size: 0.83rem;
+      margin-bottom: 14px;
+    }
+
+    .cta-btn {
+      display: inline-block;
+      background: var(--accent);
+      color: var(--bg);
+      font-family: var(--mono);
+      font-size: 0.83rem;
+      font-weight: 700;
+      padding: 9px 22px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .cta-btn:hover {
+      background: var(--accent-dim);
+      text-decoration: none;
+      color: var(--bg);
+    }
+
+    /* Related */
+    .related {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .related a {
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      padding: 4px 10px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      transition: border-color 0.1s, color 0.1s;
+    }
+
+    .related a:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 48px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    footer a { color: var(--muted); }
+    footer a:hover { color: var(--accent); text-decoration: none; }
+
+    @media (max-width: 480px) {
+      body { padding: 16px 12px 48px; }
+      .logo { font-size: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo"><a href="/" style="color:var(--accent);text-decoration:none;">Free Takuzu</a></div>
+    <div class="tagline">Binary logic puzzle — fill the grid with 0s and 1s</div>
+  </header>
+
+  <div class="breadcrumb">
+    <a href="/">Home</a>
+    <span>&#8250;</span>
+    <span>Strategies</span>
+  </div>
+
+  <h1>Takuzu Strategies — How to Solve Binary Puzzles Without Guessing</h1>
+
+  <p class="intro">
+    Every Takuzu (Binairo) puzzle has a unique solution reachable through pure logic. No guessing is ever required.
+    The key is knowing <strong>which pattern to look for next</strong>. Four strategies cover the vast majority of
+    forced moves in any puzzle, from a simple 6&times;6 to a challenging 10&times;10 grid. Learn them in order
+    and you will always find a way forward.
+  </p>
+
+  <!-- Strategy 1: Adjacent Pair -->
+  <div class="section">
+    <div class="section-label">Strategy 1</div>
+    <h2>Adjacent Pair — Two in a Row Forces Both Neighbors</h2>
+
+    <p class="body-text">
+      The <strong>no-three-in-a-row rule</strong> is the most productive source of forced moves.
+      Whenever two identical digits appear side by side, placing a third identical digit on either end
+      would immediately create an illegal triplet. Therefore, <strong>both neighbors of the pair must
+      be the opposite digit</strong>.
+    </p>
+
+    <div class="example">
+      <div class="example-label">Example — two 1s force both neighbors to 0</div>
+      <div class="grid-row">
+        <div class="cell-eg empty">·</div>
+        <div class="cell-eg clue c1">1</div>
+        <div class="cell-eg clue c1">1</div>
+        <div class="cell-eg empty">·</div>
+        <div class="cell-eg clue c0">0</div>
+        <div class="cell-eg empty">·</div>
+        <div class="arrow">&#8594;</div>
+        <div class="cell-eg forced">0</div>
+        <div class="cell-eg clue c1">1</div>
+        <div class="cell-eg clue c1">1</div>
+        <div class="cell-eg forced">0</div>
+        <div class="cell-eg clue c0">0</div>
+        <div class="cell-eg empty">·</div>
+        <div class="forced-label">both forced</div>
+      </div>
+    </div>
+
+    <p class="body-text">
+      This works in every direction. Scan <strong>every row and every column</strong> for adjacent pairs
+      at the start of each solving pass. On harder puzzles, one forced cell from the adjacent pair rule
+      creates a new adjacent pair in the same column, which forces another cell, which cascades further.
+      Always re-scan after each fill.
+    </p>
+
+    <p class="body-text">
+      This strategy alone solves most easy puzzles completely and fills 30&ndash;50% of cells in medium
+      and hard puzzles before you need to reach for the next technique.
+    </p>
+  </div>
+
+  <!-- Strategy 2: Sandwich -->
+  <div class="section">
+    <div class="section-label">Strategy 2</div>
+    <h2>Sandwich — Two Identical Digits With One Gap Forces the Middle</h2>
+
+    <p class="body-text">
+      A variation of the adjacent pair rule. When two identical digits are separated by exactly one empty
+      cell — a <strong>sandwich pattern</strong> — filling the middle with the same digit would create
+      three identical digits in a row. Therefore, <strong>the middle cell must be the opposite digit</strong>.
+    </p>
+
+    <div class="example">
+      <div class="example-label">Example — 1, ?, 1 forces the middle to 0</div>
+      <div class="grid-row">
+        <div class="cell-eg clue c0">0</div>
+        <div class="cell-eg clue c1">1</div>
+        <div class="cell-eg empty">·</div>
+        <div class="cell-eg clue c1">1</div>
+        <div class="cell-eg empty">·</div>
+        <div class="cell-eg empty">·</div>
+        <div class="arrow">&#8594;</div>
+        <div class="cell-eg clue c0">0</div>
+        <div class="cell-eg clue c1">1</div>
+        <div class="cell-eg forced">0</div>
+        <div class="cell-eg clue c1">1</div>
+        <div class="cell-eg empty">·</div>
+        <div class="cell-eg empty">·</div>
+        <div class="forced-label">forced 0</div>
+      </div>
+    </div>
+
+    <p class="body-text">
+      The sandwich pattern is easy to miss when scanning quickly. Look for any pair of identical digits
+      with a single empty cell between them, including patterns that span across already-filled cells.
+      Columns are just as likely to contain this pattern as rows.
+    </p>
+
+    <p class="body-text">
+      Together, <strong>adjacent pair and sandwich</strong> apply the no-three-in-a-row rule exhaustively.
+      Whenever you are stuck, double-check that you have applied both to every row and column before
+      moving to the balance-counting strategy.
+    </p>
+  </div>
+
+  <!-- Strategy 3: Balance Counting -->
+  <div class="section">
+    <div class="section-label">Strategy 3</div>
+    <h2>Balance Counting — A Full Half Fills the Rest</h2>
+
+    <p class="body-text">
+      Every row and every column must contain exactly half 0s and half 1s. In an 8&times;8 grid, that
+      is four 0s and four 1s per line. In a 6&times;6 grid, three of each. When a row already contains
+      its full quota of one digit, <strong>every remaining empty cell in that row must be the other digit</strong>.
+    </p>
+
+    <div class="example">
+      <div class="example-label">Example — row already has four 1s in an 8&times;8 grid; empty cells must be 0</div>
+      <div class="grid-row">
+        <div class="cell-eg clue c1">1</div>
+        <div class="cell-eg clue c0">0</div>
+        <div class="cell-eg clue c1">1</div>
+        <div class="cell-eg empty">·</div>
+        <div class="cell-eg clue c1">1</div>
+        <div class="cell-eg empty">·</div>
+        <div class="cell-eg clue c1">1</div>
+        <div class="cell-eg empty">·</div>
+        <div class="arrow">&#8594;</div>
+        <div class="cell-eg clue c1">1</div>
+        <div class="cell-eg clue c0">0</div>
+        <div class="cell-eg clue c1">1</div>
+        <div class="cell-eg forced">0</div>
+        <div class="cell-eg clue c1">1</div>
+        <div class="cell-eg forced">0</div>
+        <div class="cell-eg clue c1">1</div>
+        <div class="cell-eg forced">0</div>
+        <div class="forced-label">all forced</div>
+      </div>
+    </div>
+
+    <p class="body-text">
+      This is the most <strong>explosive</strong> strategy when it fires: a single row observation fills
+      all remaining cells in that row at once. Count every partially-filled row and column. Even if a
+      row is only two-thirds complete, knowing it has three 1s remaining can tell you that the next
+      two cells you fill must be 0s to avoid overshooting the quota.
+    </p>
+
+    <p class="body-text">
+      Apply balance counting <strong>after</strong> the adjacent pair and sandwich passes. Each forced
+      cell from those strategies changes the count, and a row that was not yet triggerable may become
+      triggerable after a single new fill.
+    </p>
+  </div>
+
+  <!-- Strategy 4: Duplicate Prevention -->
+  <div class="section">
+    <div class="section-label">Strategy 4</div>
+    <h2>Duplicate Prevention — Nearly-Identical Rows Force a Difference</h2>
+
+    <p class="body-text">
+      No two rows may be identical, and no two columns may be identical. This rule becomes actionable
+      when a <strong>nearly-complete row has only one empty cell remaining</strong> and it looks identical
+      to a fully-completed row in every other position. The empty cell must be filled with the
+      <strong>opposite value</strong> of what the completed row has in that position.
+    </p>
+
+    <div class="example">
+      <div class="example-label">Example — row A (complete) forces row B's last cell to differ</div>
+      <div style="margin-bottom:8px;">
+        <div class="grid-row" style="margin-bottom:2px;">
+          <span style="color:var(--muted);font-size:0.75rem;width:14px;">A</span>
+          <div class="cell-eg clue c1">1</div>
+          <div class="cell-eg clue c0">0</div>
+          <div class="cell-eg clue c1">1</div>
+          <div class="cell-eg clue c0">0</div>
+          <div class="cell-eg clue c1">1</div>
+          <div class="cell-eg clue c0">0</div>
+        </div>
+        <div class="grid-row">
+          <span style="color:var(--muted);font-size:0.75rem;width:14px;">B</span>
+          <div class="cell-eg clue c1">1</div>
+          <div class="cell-eg clue c0">0</div>
+          <div class="cell-eg clue c1">1</div>
+          <div class="cell-eg clue c0">0</div>
+          <div class="cell-eg clue c1">1</div>
+          <div class="cell-eg empty">·</div>
+          <div class="arrow">&#8594;</div>
+          <div class="cell-eg forced">1</div>
+          <div class="forced-label">must differ from A (which has 0)</div>
+        </div>
+      </div>
+    </div>
+
+    <p class="body-text">
+      Check this strategy whenever a row or column reaches its <strong>last empty cell</strong>. Compare
+      that row against every fully-completed row. If they match everywhere except the empty cell, the empty
+      cell is forced. The same logic applies symmetrically to columns.
+    </p>
+
+    <p class="body-text">
+      On 10&times;10 grids, duplicate prevention often triggers multiple times in the endgame, when most
+      rows are nearly complete and many completed rows exist to compare against. This strategy, combined
+      with balance counting, typically finishes the final third of a hard puzzle.
+    </p>
+  </div>
+
+  <!-- Putting it together -->
+  <div class="section">
+    <h2>Putting It All Together — The Solving Loop</h2>
+
+    <p class="body-text">
+      Apply all four strategies in a repeating loop. One pass rarely exhausts all forced moves;
+      each newly filled cell opens up new deductions in the same row, column, and across the grid.
+    </p>
+
+    <table class="summary">
+      <thead>
+        <tr>
+          <th>Order</th>
+          <th>Strategy</th>
+          <th>When to Apply</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1</strong></td>
+          <td><strong>Adjacent Pair</strong></td>
+          <td>Always first — scan every row and column for two identical digits in a row.</td>
+        </tr>
+        <tr>
+          <td><strong>2</strong></td>
+          <td><strong>Sandwich</strong></td>
+          <td>After adjacent pair — scan for identical digits with one gap between them.</td>
+        </tr>
+        <tr>
+          <td><strong>3</strong></td>
+          <td><strong>Balance Counting</strong></td>
+          <td>Check if any row or column has hit its limit for one digit; fill the rest.</td>
+        </tr>
+        <tr>
+          <td><strong>4</strong></td>
+          <td><strong>Duplicate Prevention</strong></td>
+          <td>Check near-complete rows and columns against completed ones for forced differences.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="body-text" style="margin-top:16px;">
+      Repeat the loop until the puzzle is solved. Most easy puzzles need only one or two full passes.
+      Hard 10&times;10 puzzles may require five or six, but the solution always emerges — no guessing needed.
+    </p>
+
+    <ul class="steps">
+      <li>
+        <span class="step-n">&#9655;</span>
+        <span class="step-t"><strong>Stuck?</strong> Start the loop again from step 1. New cells filled in later strategies often re-trigger the adjacent pair and sandwich rules in the same row or column.</span>
+      </li>
+      <li>
+        <span class="step-n">&#9655;</span>
+        <span class="step-t"><strong>Columns too.</strong> It is easy to focus on rows and forget columns. Every strategy applies equally to both directions. A balanced column with four 0s and one empty cell is just as immediately solvable as a balanced row.</span>
+      </li>
+      <li>
+        <span class="step-n">&#9655;</span>
+        <span class="step-t"><strong>Use the Check button.</strong> If you are unsure whether a cell is correct, use the Check feature to highlight errors in red before they cascade. Incorrect cells early in the solve cascade into many wrong deductions.</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- FAQ -->
+  <div class="section">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq">
+      <div class="faq-item">
+        <h3>What is the most useful Takuzu strategy for beginners?</h3>
+        <p>Start with the adjacent pair rule: any two identical digits sitting next to each other force both neighbors to be the opposite value. This creates a chain reaction that quickly fills many cells. Apply this rule to every row and column before trying anything else.</p>
+      </div>
+      <div class="faq-item">
+        <h3>How do I use balance counting to solve Takuzu?</h3>
+        <p>Every row and column must have exactly equal numbers of 0s and 1s. In an 8&times;8 grid, that means four 0s and four 1s per row. Count the filled cells. If a row already has four 1s, every remaining empty cell must be 0. This often fills two or three cells at once.</p>
+      </div>
+      <div class="faq-item">
+        <h3>What is the sandwich rule in Takuzu?</h3>
+        <p>The sandwich rule applies when two identical digits have exactly one empty cell between them: for example 1, ?, 1. The middle cell must be the opposite digit (0), because placing a 1 there would create three consecutive 1s, violating the rules.</p>
+      </div>
+      <div class="faq-item">
+        <h3>How does duplicate prevention help solve Takuzu?</h3>
+        <p>No two rows or columns may be identical. If a nearly-complete row has only one empty cell and matches a completed row in every other position, the empty cell must be the opposite of what the completed row has there. This forces a value without any counting.</p>
+      </div>
+      <div class="faq-item">
+        <h3>In what order should I apply Takuzu strategies?</h3>
+        <p>Work in this order: (1) Adjacent pair, (2) Sandwich, (3) Balance counting, (4) Duplicate prevention. Repeat until solved. Most puzzles need only two or three full passes.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Do I ever need to guess in Takuzu?</h3>
+        <p>No. Every well-constructed Takuzu puzzle is solvable through logical deduction alone. The four strategies above are sufficient for any valid puzzle. If you feel stuck, you have missed a forced move — re-scan every row and column from the beginning.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <p>Put these strategies to the test. Free Takuzu generates fresh puzzles instantly in your browser — no account, no ads.</p>
+    <a href="/" class="cta-btn">Play Takuzu Free &rarr;</a>
+  </div>
+
+  <div class="section">
+    <h2>Related Puzzles</h2>
+    <div class="related">
+      <a href="https://ruedoku.com">Ruedoku &mdash; Sudoku</a>
+      <a href="https://freekakuro.com">Free Kakuro</a>
+      <a href="https://freenonograms.com">Free Nonograms</a>
+      <a href="https://freereversi.com">Free Reversi</a>
+    </div>
+  </div>
+
+  <footer>
+    <span>Free Takuzu &mdash; browser-based binary puzzle game</span>
+    <span>Support: <a href="https://bitterdesk.com/s/freetakuzu/">bitterdesk.com</a></span>
+  </footer>
+</div>
+</body>
+</html>
