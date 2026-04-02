@@ -48,63 +48,6 @@
   }
   </script>
 
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "What is the most useful Takuzu strategy for beginners?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Start with the adjacent pair rule: any two identical digits sitting next to each other force both neighbors to be the opposite value. This creates a chain reaction that quickly fills many cells. Apply this rule to every row and column before trying anything else."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "How do I use balance counting to solve Takuzu?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Every row and column must have exactly equal numbers of 0s and 1s. In an 8x8 grid, that means four 0s and four 1s per row. Count the filled cells in each row and column. If a row already has four 1s, every remaining empty cell in that row must be 0. This often fills two or three cells at once."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "What is the sandwich rule in Takuzu?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "The sandwich rule applies when two identical digits have exactly one empty cell between them: for example 1, ?, 1. The cell in the middle must be the opposite digit (0 in this case), because placing a 1 there would create three consecutive 1s, which violates the rules."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "How does duplicate prevention help solve Takuzu?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "No two rows (or columns) may be identical. If a nearly-complete row has only one empty cell remaining, compare it against every completed row. If it matches a completed row in every position except the empty one, the empty cell must be the opposite of what the completed row has there. This forces a value without any counting."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "In what order should I apply Takuzu strategies?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Work in this order: (1) Adjacent pair — scan all rows and columns for two identical digits in a row. (2) Sandwich — scan for identical digits with one gap between them. (3) Balance counting — check if any row or column has reached its limit of one digit. (4) Duplicate prevention — check nearly-complete rows against completed ones. Repeat until the puzzle is solved. Most puzzles require only two or three passes."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Do I ever need to guess in Takuzu?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "No. Every well-constructed Takuzu puzzle is solvable through logical deduction alone. The four strategies above — adjacent pair, sandwich, balance counting, and duplicate prevention — are sufficient to solve any valid puzzle. If you feel stuck, you have missed a forced move. Re-scan every row and column from the beginning."
-        }
-      }
-    ]
-  }
-  </script>
-
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
