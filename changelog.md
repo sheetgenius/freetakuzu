@@ -7,6 +7,7 @@
 
 ### Fixed
 - Removed FAQPage JSON-LD from the strategies page to prevent zero-click suppression in search results
+- Removed FAQPage JSON-LD from the homepage to recover click-through rate
 
 ## 2026-04-01
 
