@@ -32,9 +32,11 @@ Embed or link when:
 ## Hosting
 
 - Domain: freetakuzu.com
+- Radicchio site: 38 (`freetakuzu`)
 - Radicchio hostname: freetakuzu.radicchio.page
 - GitHub: sheetgenius/freetakuzu
-- Deploy: git push to main → webhook → Radicchio
+- Deploy: git push to main -> signed GitHub webhook -> Radicchio
+- Repo-specific deploy secrets: none. `config/deploy.credentials.yml` intentionally has an empty selector set; the webhook secret lives in Radicchio and GitHub, not in this repo.
 
 ## Related properties
 

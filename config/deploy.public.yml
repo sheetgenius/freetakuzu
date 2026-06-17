@@ -1,0 +1,6 @@
+schema: bitter.deploy.public_config.v0
+service: freetakuzu.com
+
+clear: []
+source_owned: []
+candidates: []
