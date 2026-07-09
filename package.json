@@ -1,0 +1,9 @@
+{
+  "name": "freetakuzu",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "smoke": "node qa/smoke.mjs",
+    "qa:smoke": "node qa/smoke.mjs"
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "hosting": "radicchio",
+  "service_name": "freetakuzu.com",
+  "healthcheck_path": "/",
+  "preview": {
+    "default_target": "web",
+    "targets": {
+      "web": {
+        "command": "python3 -m http.server 4173",
+        "container_port": 4173,
+        "health_path": "/"
+      }
+    }
+  },
+  "runtime": {
+    "state": "stateless",
+    "container_port": 8080,
+    "processes": [
+      "static-site"
+    ]
+  },
+  "verification": {
+    "liveness_path": "/",
+    "release_identity": {
+      "artifact_digest": {
+        "expected_from": "deploy_record",
+        "observed_from": "edge_headers"
+      },
+      "reported_git_sha_path": null
+    },
+    "checks": [
+      {
+        "name": "homepage",
+        "kind": "http",
+        "path": "/",
+        "expect_status": 200,
+        "timeout_ms": 5000,
+        "runs_on": [
+          "deploy",
+          "post_deploy",
+          "continuous"
+        ],
+        "policy": "required",
+        "access_path": "edge"
+      },
+      {
+        "name": "binairo_online",
+        "kind": "http",
+        "path": "/binairo-online",
+        "expect_status": 200,
+        "timeout_ms": 5000,
+        "runs_on": [
+          "deploy",
+          "post_deploy",
+          "continuous"
+        ],
+        "policy": "required",
+        "access_path": "edge"
+      },
+      {
+        "name": "binary_puzzle",
+        "kind": "http",
+        "path": "/binary-puzzle",
+        "expect_status": 200,
+        "timeout_ms": 5000,
+        "runs_on": [
+          "deploy",
+          "post_deploy",
+          "continuous"
+        ],
+        "policy": "required",
+        "access_path": "edge"
+      },
+      {
+        "name": "sitemap",
+        "kind": "http",
+        "path": "/sitemap.xml",
+        "expect_status": 200,
+        "timeout_ms": 5000,
+        "runs_on": [
+          "deploy",
+          "post_deploy",
+          "continuous"
+        ],
+        "policy": "required",
+        "access_path": "edge"
+      }
+    ]
+  },
+  "housekeeping": {
+    "durable_paths": [],
+    "ephemeral_paths": []
+  }
+}
