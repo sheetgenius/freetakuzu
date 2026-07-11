@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Free Takuzu (Binairo) - Binary Puzzle Game Online</title>
   <meta name="description" content="Play free Takuzu and Binairo puzzles online. Fill binary puzzle grids with 0s and 1s: no three consecutive, balanced rows and columns, no duplicate lines.">
-  <meta name="keywords" content="takuzu, binairo, binary puzzle, takuzu online, free takuzu, binairo game, binary puzzle game, logic puzzle, 0hh1">
   <meta property="og:title" content="Free Takuzu (Binairo) - Binary Puzzle Game Online">
   <meta property="og:description" content="Play free Takuzu and Binairo puzzles online. Fill binary puzzle grids with 0s and 1s following three logical rules.">
   <meta property="og:type" content="website">
@@ -16,6 +15,8 @@
   <meta name="twitter:title" content="Free Takuzu (Binairo) - Binary Puzzle Game">
   <meta name="twitter:description" content="Play free Takuzu and Binairo binary puzzles online. Browser-only, no account needed.">
   <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#f7f3ea" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#171612" media="(prefers-color-scheme: dark)">
   <link rel="canonical" href="https://freetakuzu.com/">
 
   <!-- Google tag (gtag.js) -->
@@ -49,301 +50,389 @@
       "Error highlighting and validation",
       "Hint and Solve features",
       "Timer",
-      "Works offline — no server required"
-    ]
-  }
-  </script>
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "Are Takuzu and Binairo the same puzzle?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes. Takuzu, Binairo, binary puzzle, 0hh1, and Tic-Tac-Logic usually refer to the same 0 and 1 logic puzzle family."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Can I play Binairo online for free?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes. Free Takuzu lets you play Takuzu and Binairo puzzles online in the browser with no account, ads, or signup."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "What are the binary puzzle rules?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Fill every cell with 0 or 1. No row or column can contain three identical digits in a row, each row and column must contain equal counts of 0s and 1s, and no two rows or columns can be identical."
-        }
-      }
+      "Client-side puzzle generation",
+      "No account required"
     ]
   }
   </script>
 
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; }
 
     :root {
-      --bg: #1a1814;
-      --surface: #221f1b;
-      --surface-2: #2a2620;
-      --border: #2e2a24;
-      --border-2: #3a3530;
-      --text: #e0d8c8;
-      --muted: #8f8577;
-      --accent: #c8a84e;
-      --accent-dim: #a8883e;
-      --green: #6abf69;
-      --red: #e05a4e;
-      --mono: 'SF Mono', 'Fira Code', 'Consolas', 'Menlo', monospace;
+      color-scheme: light dark;
+      --bg: #f7f3ea;
+      --surface: #efe9de;
+      --surface-strong: #e3dbc9;
+      --border: #d8cfbe;
+      --border-strong: #a99d89;
+      --text: #25231f;
+      --muted: #696258;
+      --accent: #805408;
+      --accent-strong: #684100;
+      --accent-ink: #fffaf0;
+      --zero: #425a73;
+      --green: #2f6d44;
+      --red: #a13f35;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
     }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #171612;
+        --surface: #201e19;
+        --surface-strong: #2b2821;
+        --border: #37332b;
+        --border-strong: #6a6152;
+        --text: #eee8dc;
+        --muted: #aaa093;
+        --accent: #d8af4e;
+        --accent-strong: #efc85d;
+        --accent-ink: #1d180e;
+        --zero: #b1c3d5;
+        --green: #7bc28f;
+        --red: #ef8073;
+      }
+    }
+
+    html { background: var(--bg); }
 
     body {
+      min-height: 100vh;
+      margin: 0;
       background: var(--bg);
       color: var(--text);
-      font-family: var(--mono);
-      font-size: 14px;
-      line-height: 1.6;
-      padding: 24px 16px 64px;
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.55;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
     }
 
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    .container { max-width: 640px; margin: 0 auto; }
-
-    header { margin-bottom: 24px; }
-
-    .logo {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--accent);
-      letter-spacing: -0.5px;
+    a {
+      color: var(--accent-strong);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.2em;
     }
 
-    .tagline {
-      color: var(--muted);
-      font-size: 0.83rem;
-      margin-top: 3px;
+    a:hover { text-decoration-thickness: 2px; }
+
+    .container {
+      width: min(100% - 40px, 760px);
+      margin: 0 auto;
+      padding: 24px 0 56px;
     }
 
-    /* Controls */
-    .controls {
+    .masthead {
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 16px;
       align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border);
     }
 
-    .control-group { display: flex; gap: 3px; }
+    .wordmark {
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.94rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+    }
+
+    .wordmark-mark { color: var(--accent); }
+
+    .masthead nav {
+      display: flex;
+      gap: 18px;
+      font-size: 0.82rem;
+    }
+
+    .masthead nav a { color: var(--muted); }
+
+    .intro { padding: 32px 0 26px; }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 650px;
+      margin: 0;
+      font-size: clamp(2rem, 6vw, 3.15rem);
+      line-height: 1.02;
+      letter-spacing: -0.045em;
+    }
+
+    .lede {
+      max-width: 620px;
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: clamp(1rem, 2.2vw, 1.12rem);
+    }
+
+    .game {
+      padding: 20px 0 24px;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: auto auto 1fr;
+      gap: 14px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+
+    .control-set {
+      min-width: 0;
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    .control-set legend {
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .control-group { display: flex; }
 
     button {
-      background: var(--surface);
-      border: 1px solid var(--border-2);
-      color: var(--muted);
+      min-height: 42px;
+      border: 1px solid var(--border-strong);
+      border-radius: 0;
+      background: transparent;
+      color: var(--text);
       font-family: var(--mono);
-      font-size: 0.78rem;
-      padding: 5px 11px;
+      font-size: 0.79rem;
+      font-weight: 650;
+      padding: 8px 13px;
       cursor: pointer;
-      transition: border-color 0.1s, color 0.1s;
+      touch-action: manipulation;
+      transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
     }
 
-    button:hover { border-color: var(--accent); color: var(--text); }
+    .control-group button + button { border-left: 0; }
+
+    button:hover {
+      border-color: var(--accent);
+      background: var(--surface);
+    }
+
+    button:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 2px;
+    }
 
     button.active {
-      background: var(--surface-2);
-      border-color: var(--accent);
-      color: var(--accent);
+      background: var(--surface-strong);
+      color: var(--accent-strong);
+      box-shadow: inset 0 -3px 0 var(--accent);
     }
 
     button.primary {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: var(--bg);
-      font-weight: 700;
+      justify-self: end;
+      min-width: 112px;
+      background: var(--accent-strong);
+      border-color: var(--accent-strong);
+      color: var(--accent-ink);
     }
 
-    button.primary:hover { background: var(--accent-dim); border-color: var(--accent-dim); }
-    button:disabled { opacity: 0.35; cursor: default; pointer-events: none; }
+    button.primary:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
 
-    /* Status bar */
+    button:disabled {
+      opacity: 0.42;
+      cursor: default;
+      pointer-events: none;
+    }
+
     .status-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      min-height: 25px;
       margin-bottom: 10px;
-      font-size: 0.8rem;
       color: var(--muted);
-      min-height: 20px;
+      font-family: var(--mono);
+      font-size: 0.76rem;
     }
 
     #status-msg.win { color: var(--green); font-weight: 700; }
-    #status-msg.err { color: var(--red); }
-
+    #status-msg.err { color: var(--red); font-weight: 700; }
     #timer { font-variant-numeric: tabular-nums; }
 
-    /* Grid */
     .grid-wrap {
       display: flex;
       justify-content: center;
-      margin-bottom: 14px;
+      min-height: 100px;
+      margin-bottom: 16px;
     }
 
     #grid {
       display: grid;
-      gap: 2px;
-      background: var(--border-2);
-      border: 2px solid var(--border-2);
-      padding: 2px;
+      width: min(100%, 520px);
+      gap: 1px;
+      padding: 1px;
+      border: 1px solid var(--border-strong);
+      background: var(--border-strong);
     }
 
     .cell {
-      background: var(--bg);
       display: flex;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
-      font-weight: 700;
-      user-select: none;
-      transition: background 0.07s;
       aspect-ratio: 1;
+      background: var(--bg);
+      color: var(--text);
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: clamp(1.02rem, 5vw, 1.55rem);
+      font-weight: 750;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 80ms ease;
     }
 
     .cell.clue {
-      background: var(--surface-2);
+      background: var(--surface-strong);
       cursor: default;
     }
 
-    .cell.v0 { color: var(--muted); }
-    .cell.v1 { color: var(--accent); }
-    .cell.clue.v0 { color: #b0a898; }
-    .cell.clue.v1 { color: var(--accent); }
-    .cell.err-cell { background: rgba(224, 90, 78, 0.18) !important; }
-    .cell.selected { outline: 2px solid var(--accent); outline-offset: -2px; }
+    .cell.v0 { color: var(--zero); }
+    .cell.v1 { color: var(--accent-strong); }
+    .cell.err-cell { background: color-mix(in srgb, var(--red) 16%, var(--bg)) !important; }
+    .cell.selected { outline: 3px solid var(--accent); outline-offset: -3px; }
     .cell:not(.clue):hover { background: var(--surface); }
 
-    /* Actions */
     .actions {
       display: flex;
-      gap: 8px;
-      margin-bottom: 32px;
+      justify-content: center;
       flex-wrap: wrap;
+      gap: 8px;
     }
 
-    /* Content sections */
+    .keyboard-hint {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 0.76rem;
+      text-align: center;
+    }
+
+    kbd {
+      padding: 1px 5px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+    }
+
     .section {
-      margin-top: 40px;
-      border-top: 1px solid var(--border);
-      padding-top: 24px;
+      padding: 34px 0;
+      border-bottom: 1px solid var(--border);
     }
 
     .section h2 {
-      font-size: 0.82rem;
-      color: var(--accent);
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      margin-bottom: 16px;
+      margin: 0 0 18px;
+      font-size: 1.2rem;
+      letter-spacing: -0.02em;
     }
 
     .rules-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      margin: 0;
+      padding: 0;
       list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
     }
 
     .rules-list li {
-      display: flex;
-      gap: 12px;
+      padding: 0 20px;
+      border-left: 1px solid var(--border);
     }
 
-    .rule-n { color: var(--accent); font-weight: 700; min-width: 20px; }
-    .rule-t { color: var(--muted); }
-    .rule-t strong { color: var(--text); }
+    .rules-list li:first-child {
+      padding-left: 0;
+      border-left: 0;
+    }
+
+    .rule-n {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+    }
+
+    .rule-t {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    .rule-t strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--text);
+      font-size: 0.94rem;
+    }
+
+    .copy-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
 
     .about-text {
+      margin: 0 0 14px;
       color: var(--muted);
-      line-height: 1.75;
-      margin-bottom: 14px;
-      font-size: 0.86rem;
+      font-size: 0.94rem;
+      line-height: 1.65;
     }
 
+    .about-text:last-child { margin-bottom: 0; }
     .about-text strong { color: var(--text); }
 
-    /* FAQ */
-    .faq { display: flex; flex-direction: column; gap: 20px; }
-
-    .faq-item h3 {
-      font-size: 0.86rem;
-      color: var(--text);
-      margin-bottom: 5px;
-    }
-
-    .faq-item p {
-      color: var(--muted);
-      line-height: 1.7;
-      font-size: 0.83rem;
-    }
-
-    /* Related */
     .related {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 12px;
+      gap: 8px 18px;
     }
 
     .related a {
-      background: var(--surface);
-      border: 1px solid var(--border-2);
-      padding: 4px 10px;
-      font-size: 0.78rem;
       color: var(--muted);
-      transition: border-color 0.1s, color 0.1s;
+      font-size: 0.88rem;
     }
 
-    .related a:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-      text-decoration: none;
-    }
-
-    /* Footer */
     footer {
-      margin-top: 48px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 0.75rem;
       display: flex;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 10px 20px;
+      padding-top: 22px;
+      color: var(--muted);
+      font-size: 0.78rem;
     }
 
     footer a { color: var(--muted); }
-    footer a:hover { color: var(--accent); text-decoration: none; }
-
-    /* Loading overlay */
-    #loading {
-      position: absolute;
-      inset: 0;
-      background: var(--bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--muted);
-      font-size: 0.8rem;
-    }
-
-    .grid-wrap { position: relative; min-height: 100px; }
 
     .sr-only {
       position: absolute;
@@ -352,199 +441,172 @@
       padding: 0;
       margin: -1px;
       overflow: hidden;
-      clip: rect(0,0,0,0);
+      clip: rect(0, 0, 0, 0);
       white-space: nowrap;
       border: 0;
     }
 
-    @media (max-width: 480px) {
-      body { padding: 16px 12px 48px; }
-      .logo { font-size: 1.25rem; }
-      .controls { gap: 6px; }
-      #kb-hint { display: none; }
+    @media (max-width: 680px) {
+      .container {
+        width: min(100% - 28px, 760px);
+        padding-top: 16px;
+      }
+
+      .masthead { padding-bottom: 14px; }
+      .masthead nav { gap: 14px; }
+      .intro { padding: 22px 0 20px; }
+      h1 { font-size: clamp(1.85rem, 8.5vw, 2.1rem); line-height: 1.06; }
+      .lede { font-size: 0.98rem; }
+
+      .controls {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px 10px;
+      }
+
+      .control-group button {
+        flex: 1;
+        min-width: 0;
+        padding-inline: 8px;
+      }
+
+      button.primary {
+        grid-column: 1 / -1;
+        justify-self: stretch;
+      }
+
+      .rules-list { grid-template-columns: 1fr; }
+
+      .rules-list li,
+      .rules-list li:first-child {
+        padding: 14px 0;
+        border-top: 1px solid var(--border);
+        border-left: 0;
+      }
+
+      .rules-list li:first-child { padding-top: 0; border-top: 0; }
+      .copy-grid { grid-template-columns: 1fr; gap: 0; }
+    }
+
+    @media (max-width: 430px) {
+      .game { padding-top: 18px; }
+      .actions { display: grid; grid-template-columns: 1fr 1fr; }
+      .actions button { width: 100%; }
+      .keyboard-hint { display: none; }
+      .section { padding: 28px 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: 0.01ms !important; }
     }
   </style>
 </head>
 <body>
 <div class="container">
-  <h1 class="sr-only">Free Takuzu — Play Binary Puzzle Online</h1>
-  <header>
-    <div class="logo">Free Takuzu</div>
-    <div class="tagline">Binary logic puzzle — fill the grid with 0s and 1s</div>
+  <header class="masthead">
+    <a class="wordmark" href="/" aria-label="Free Takuzu home"><span class="wordmark-mark" aria-hidden="true">0·1</span> Free Takuzu</a>
+    <nav aria-label="Primary navigation">
+      <a href="#rules">Rules</a>
+      <a href="/strategies">Strategies</a>
+    </nav>
   </header>
 
-  <div class="controls">
-    <div class="control-group" id="size-btns">
-      <button class="size-btn" data-size="6">6×6</button>
-      <button class="size-btn active" data-size="8">8×8</button>
-      <button class="size-btn" data-size="10">10×10</button>
-    </div>
-    <div class="control-group" id="diff-btns">
-      <button class="diff-btn" data-diff="easy">Easy</button>
-      <button class="diff-btn active" data-diff="medium">Medium</button>
-      <button class="diff-btn" data-diff="hard">Hard</button>
-    </div>
-    <button class="primary" id="new-btn">New Game</button>
-  </div>
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <p class="eyebrow">Binary logic puzzle</p>
+      <h1 id="page-title">Fill the grid. Keep every line unique.</h1>
+      <p class="lede">Place 0s and 1s so every row and column follows the same three rules. Free to play in your browser, with no account and no time limit.</p>
+    </section>
 
-  <div class="status-bar">
-    <span id="status-msg"></span>
-    <span id="timer">0:00</span>
-  </div>
-
-  <div class="grid-wrap">
-    <div id="grid"></div>
-  </div>
-
-  <div class="actions">
-    <button id="check-btn">Check</button>
-    <button id="hint-btn">Hint</button>
-    <button id="solve-btn">Solve</button>
-    <button id="clear-btn">Clear</button>
-  </div>
-
-  <p id="kb-hint" style="font-size:0.75rem;color:var(--muted);margin-bottom:8px;">
-    Click a cell to select · press <kbd style="border:1px solid var(--border-2);padding:0 4px;border-radius:3px;">0</kbd> or <kbd style="border:1px solid var(--border-2);padding:0 4px;border-radius:3px;">1</kbd> · arrow keys to navigate
-  </p>
-
-  <div class="section">
-    <h2>Rules</h2>
-    <ul class="rules-list">
-      <li>
-        <span class="rule-n">1.</span>
-        <span class="rule-t"><strong>No three in a row.</strong> You cannot have three consecutive identical digits anywhere in a row or column — neither three 0s nor three 1s side by side.</span>
-      </li>
-      <li>
-        <span class="rule-n">2.</span>
-        <span class="rule-t"><strong>Balanced rows and columns.</strong> Each row and each column must contain exactly the same number of 0s and 1s — half and half.</span>
-      </li>
-      <li>
-        <span class="rule-n">3.</span>
-        <span class="rule-t"><strong>All rows and columns unique.</strong> No two rows may be identical, and no two columns may be identical.</span>
-      </li>
-    </ul>
-  </div>
-
-  <div class="section">
-    <h2>About Takuzu</h2>
-    <p class="about-text">
-      <strong>Takuzu</strong> (also known as <strong>Binairo</strong>, Binary Puzzle, or 0hh1) is a logic puzzle played on a square grid with an even number of rows and columns. Each cell must be filled with either a <strong>0</strong> or a <strong>1</strong>, obeying three constraints: no three consecutive identical digits in any direction, equal counts of 0s and 1s in every row and column, and no two identical rows or columns in the entire grid.
-    </p>
-    <p class="about-text">
-      Unlike Sudoku which uses nine digits, Takuzu uses only two — making each individual rule feel obvious while the puzzle as a whole stays challenging. The three rules interact in surprising ways. A single forced cell cascades across the grid, triggering more deductions until the solution emerges from pure logic alone.
-    </p>
-    <p class="about-text">
-      Takuzu was popularized in France in the early 2000s, where it appeared in puzzle magazines under several names. The Dutch publisher Conceptis made it famous internationally under the name Binairo. Regardless of name, the puzzle scales elegantly with grid size — a 6×6 grid is solvable in minutes, while a 10×10 grid challenges even experienced solvers.
-    </p>
-    <p class="about-text">
-      This implementation generates fresh puzzles instantly in your browser, stores nothing, and sends nothing to any server. Every puzzle is built from a unique valid solution, so the answer is always reachable through logical deduction — no guessing required.
-    </p>
-    <p class="about-text">
-      If you found the puzzle under another name, start with <a href="/binairo-online">Binairo online</a>, <a href="/binary-puzzle">binary puzzle online</a>, or <a href="/takuzu-vs-binairo">Takuzu vs Binairo</a>. French players can use the <a href="/binairo-gratuit">Binairo gratuit en ligne</a> guide.
-    </p>
-  </div>
-
-  <div class="section">
-    <h2>How to Play</h2>
-    <p class="about-text">
-      <strong>Click</strong> any empty cell to fill it with a <strong>0</strong>. Click again to change it to a <strong>1</strong>. Click a third time to clear it back to empty. The shaded cells are pre-filled clues — they cannot be changed.
-    </p>
-    <p class="about-text">
-      Use <strong>Check</strong> to highlight any incorrect cells in red. Use <strong>Hint</strong> to reveal one correct cell at a time. Use <strong>Solve</strong> to reveal the complete solution. Use <strong>Clear</strong> to erase all your filled cells and start fresh without generating a new puzzle.
-    </p>
-    <p class="about-text">
-      Start with the three-in-a-row rule — it's the most powerful. If two identical digits sit adjacent, the cells on both sides must be the opposite. Then count: if a row already has four 1s in an 8×8 grid, fill all remaining cells with 0. Finally, compare nearly-complete rows against each other to prevent duplicates.
-    </p>
-    <p class="about-text">
-      <a href="/strategies">Full strategies guide: four techniques to solve any Takuzu puzzle &rarr;</a>
-    </p>
-    <p class="about-text">
-      Looking for a specific name? Try the <a href="/binairo-online">Binairo online guide</a> or the <a href="/binary-puzzle">binary puzzle overview</a>.
-    </p>
-  </div>
-
-  <div class="section">
-    <h2>FAQ</h2>
-    <div class="faq">
-      <div class="faq-item">
-        <h3>What is Takuzu?</h3>
-        <p>Takuzu (also called Binairo or binary puzzle) is a logic puzzle played on a square grid. Fill each cell with 0 or 1, following three rules: no three consecutive identical digits, balanced rows and columns, no duplicate rows or columns.</p>
+    <section class="game" aria-label="Takuzu game">
+      <div class="controls">
+        <fieldset class="control-set">
+          <legend>Grid size</legend>
+          <div class="control-group" id="size-btns">
+            <button type="button" class="size-btn" data-size="6" aria-pressed="false">6×6</button>
+            <button type="button" class="size-btn active" data-size="8" aria-pressed="true">8×8</button>
+            <button type="button" class="size-btn" data-size="10" aria-pressed="false">10×10</button>
+          </div>
+        </fieldset>
+        <fieldset class="control-set">
+          <legend>Difficulty</legend>
+          <div class="control-group" id="diff-btns">
+            <button type="button" class="diff-btn" data-diff="easy" aria-pressed="false">Easy</button>
+            <button type="button" class="diff-btn active" data-diff="medium" aria-pressed="true">Medium</button>
+            <button type="button" class="diff-btn" data-diff="hard" aria-pressed="false">Hard</button>
+          </div>
+        </fieldset>
+        <button type="button" class="primary" id="new-btn">New puzzle</button>
       </div>
-      <div class="faq-item">
-        <h3>How do I play?</h3>
-        <p>Click any empty cell to cycle: empty → 0 → 1 → empty. Shaded cells are clues and cannot be changed. Use Check to validate, Hint to reveal one cell, Solve to reveal the full answer.</p>
-      </div>
-      <div class="faq-item">
-        <h3>What does "balanced" mean?</h3>
-        <p>In a 6×6 grid, every row and column must contain exactly three 0s and three 1s. In an 8×8, exactly four of each. Grids always have an even size so the balance is always achievable.</p>
-      </div>
-      <div class="faq-item">
-        <h3>What's the difference between Takuzu and Binairo?</h3>
-        <p>The same puzzle. Binairo is the trademarked name from Belgian publisher Puzzler Media. Takuzu is the common name elsewhere. Also called Binary Puzzle, 0hh1, and Tic-Tac-Logic.</p>
-      </div>
-      <div class="faq-item">
-        <h3>Do I ever need to guess?</h3>
-        <p>No. Every puzzle here is solvable by logical deduction alone. The three rules — three-in-a-row, balance, and no-duplicate — provide enough constraints to always find the next forced move without guessing.</p>
-      </div>
-      <div class="faq-item">
-        <h3>What strategies work for harder puzzles?</h3>
-        <p>Three techniques cover most situations: (1) Adjacent pair forces the neighbors — if 1,1 appear side by side, both ends must be 0. (2) Completed count fills the rest — if a row has four 1s in a 8×8 grid, fill remaining cells with 0. (3) Almost-duplicate rows — if two rows are identical except for one empty cell, that cell must differ from the completed row at that position. See the <a href="/strategies">full strategies guide</a> for details.</p>
-      </div>
-      <div class="faq-item">
-        <h3>Is there a time limit?</h3>
-        <p>No time limit. The timer tracks your elapsed time, but there's no penalty for taking as long as you need. Logic puzzles reward patience.</p>
-      </div>
-      <div class="faq-item">
-        <h3>Is Free Takuzu really free?</h3>
-        <p>Yes. No account, no ads, no signup. The game runs entirely in your browser — nothing is sent to any server. You can even play offline once the page is loaded.</p>
-      </div>
-    </div>
-  </div>
 
-  <div class="section">
-    <h2>Related Puzzles</h2>
-    <div class="related">
-      <a href="https://ruedoku.com">Ruedoku — Sudoku</a>
-      <a href="https://freekakuro.com">Free Kakuro</a>
-      <a href="https://freenonograms.com">Free Nonograms</a>
-      <a href="https://freereversi.com">Free Reversi</a>
-      <a href="/binairo-online">Binairo Online</a>
-      <a href="/binary-puzzle">Binary Puzzle</a>
-      <a href="/takuzu-vs-binairo">Takuzu vs Binairo</a>
-    </div>
-  </div>
+      <div class="status-bar">
+        <span id="status-msg" role="status" aria-live="polite">Generating…</span>
+        <span aria-label="Elapsed time">Time <span id="timer">0:00</span></span>
+      </div>
 
-  <div class="section">
-    <h2>More Free Tools</h2>
-    <div style="color:var(--muted); line-height:1.9; font-size:0.8rem;">
-      <a href="https://hashchop.radicchio.page" style="color:var(--muted);">hashchop</a> — SHA hash generator &nbsp;·&nbsp;
-      <a href="https://jwtchop.radicchio.page" style="color:var(--muted);">jwtchop</a> — JWT decoder &nbsp;·&nbsp;
-      <a href="https://epochop.radicchio.page" style="color:var(--muted);">epochop</a> — Unix timestamp &nbsp;·&nbsp;
-      <a href="https://b64chop.radicchio.page" style="color:var(--muted);">b64chop</a> — Base64 encoder &nbsp;·&nbsp;
-      <a href="https://csvchop.radicchio.page" style="color:var(--muted);">csvchop</a> — CSV to JSON &nbsp;·&nbsp;
-      <a href="https://uuidchop.radicchio.page" style="color:var(--muted);">uuidchop</a> — UUID generator &nbsp;·&nbsp;
-      <a href="https://yamlchop.radicchio.page" style="color:var(--muted);">yamlchop</a> — YAML validator &nbsp;·&nbsp;
-      <a href="https://sqlchop.radicchio.page" style="color:var(--muted);">sqlchop</a> — SQL formatter &nbsp;·&nbsp;
-      <a href="https://qrnch.radicchio.page" style="color:var(--muted);">qrnch</a> — QR code generator &nbsp;·&nbsp;
-      <a href="https://linkscrub.radicchio.page" style="color:var(--muted);">linkscrub</a> — URL cleaner &nbsp;·&nbsp;
-      <a href="https://envlint.com" style="color:var(--muted);">envlint</a> — .env validator &nbsp;·&nbsp;
-      <a href="https://cronfig.radicchio.page" style="color:var(--muted);">cronfig</a> — cron tester &nbsp;·&nbsp;
-      <a href="https://feedlint.radicchio.page" style="color:var(--muted);">feedlint</a> — RSS validator &nbsp;·&nbsp;
-      <a href="https://difflint.radicchio.page" style="color:var(--muted);">difflint</a> — diff linter &nbsp;·&nbsp;
-      <a href="https://radish.radicchio.page" style="color:var(--muted);">radish</a> — stack trace analyzer &nbsp;·&nbsp;
-      <a href="https://pxicons.com" style="color:var(--muted);">pxicons</a> — pixel favicon editor &nbsp;·&nbsp;
-      <a href="https://ruedoku.com" style="color:var(--muted);">ruedoku</a> — free Sudoku &nbsp;·&nbsp;
-      <a href="https://freekakuro.com" style="color:var(--muted);">freekakuro</a> — free Kakuro &nbsp;·&nbsp;
-      <a href="https://freenonograms.com" style="color:var(--muted);">freenonograms</a> — free Nonograms &nbsp;·&nbsp;
-      <a href="https://freereversi.com" style="color:var(--muted);">freereversi</a> — free Reversi &nbsp;·&nbsp;
-      <a href="https://bankofpapa.com" style="color:var(--muted);">bankofpapa</a> — family finance tracker &nbsp;·&nbsp;
-      <a href="https://disco.radicchio.page" style="color:var(--muted);">disco</a> — opportunity discovery engine
-    </div>
-  </div>
+      <div class="grid-wrap">
+        <div id="grid" role="grid" aria-label="8 by 8 Takuzu grid" aria-busy="true"></div>
+      </div>
+
+      <div class="actions" aria-label="Puzzle actions">
+        <button type="button" id="check-btn">Check</button>
+        <button type="button" id="hint-btn">Hint</button>
+        <button type="button" id="solve-btn">Solve</button>
+        <button type="button" id="clear-btn">Clear</button>
+      </div>
+
+      <p class="keyboard-hint">Select an open square, then press <kbd>0</kbd> or <kbd>1</kbd>. Use arrow keys to move and Delete to clear.</p>
+    </section>
+
+    <section class="section" id="rules">
+      <h2>Three rules</h2>
+      <ol class="rules-list">
+        <li>
+          <span class="rule-n">01</span>
+          <span class="rule-t"><strong>No runs of three</strong>Three matching digits cannot sit next to each other in any row or column.</span>
+        </li>
+        <li>
+          <span class="rule-n">02</span>
+          <span class="rule-t"><strong>Keep it balanced</strong>Every row and column needs the same number of 0s and 1s.</span>
+        </li>
+        <li>
+          <span class="rule-n">03</span>
+          <span class="rule-t"><strong>Make each line unique</strong>No two completed rows can match, and no two completed columns can match.</span>
+        </li>
+      </ol>
+    </section>
+
+    <section class="section">
+      <h2>How it works</h2>
+      <div class="copy-grid">
+        <div>
+          <p class="about-text"><strong>Tap an open square</strong> to cycle from blank to 0 to 1. The shaded squares are clues and do not change.</p>
+          <p class="about-text"><strong>Check</strong> marks mistakes. <strong>Hint</strong> fills one square. <strong>Solve</strong> shows the answer. <strong>Clear</strong> removes your entries but keeps the same puzzle.</p>
+        </div>
+        <div>
+          <p class="about-text">Each new board starts with a valid solution, then removes squares only while the built-in constraint solver can still finish it. You should not need to guess.</p>
+          <p class="about-text">Puzzle generation happens in this page. Your moves are not attached to an account or saved for later. <a href="/strategies">Read the strategy guide&nbsp;→</a></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>More puzzles</h2>
+      <div class="related">
+        <a href="/binairo-online">Binairo online</a>
+        <a href="/binary-puzzle">Binary puzzle guide</a>
+        <a href="/takuzu-vs-binairo">Takuzu vs. Binairo</a>
+        <a href="/binairo-gratuit">Binairo en français</a>
+        <a href="https://ruedoku.com">Ruedoku</a>
+        <a href="https://freekakuro.com">Free Kakuro</a>
+        <a href="https://freenonograms.com">Free Nonograms</a>
+      </div>
+    </section>
+  </main>
 
   <footer>
-    <span>Free Takuzu — browser-based binary puzzle game</span>
-    <span>Support: <a href="https://bitterdesk.com/s/freetakuzu/">bitterdesk.com</a></span>
+    <span>Free Takuzu</span>
+    <span>A <a href="https://company.sheetgenius.com/">SheetGenius, Inc.</a> puzzle</span>
+    <span><a href="https://bitterdesk.com/s/freetakuzu/">Support</a></span>
   </footer>
 </div>
 
@@ -805,8 +867,10 @@ function targetClues(n, diff) {
 function startGame() {
   clearInterval(G.timerInterval);
   G.timer = 0;
+  G.selected = null;
   updateTimer();
   setStatus('Generating…', '');
+  document.getElementById('grid').setAttribute('aria-busy', 'true');
 
   // Yield to browser so the status message renders before synchronous generation blocks
   setTimeout(() => {
@@ -824,7 +888,8 @@ function startGame() {
     });
 
     renderGrid();
-    setStatus('');
+    setStatus(puzzleLabel());
+    document.getElementById('grid').setAttribute('aria-busy', 'false');
 
     G.timerInterval = setInterval(() => { G.timer++; updateTimer(); }, 1000);
   }, 0);
@@ -842,26 +907,26 @@ function setStatus(msg, cls) {
   el.className = cls || '';
 }
 
+function puzzleLabel() {
+  const difficulty = G.difficulty.charAt(0).toUpperCase() + G.difficulty.slice(1);
+  return `${G.n}×${G.n} · ${difficulty}`;
+}
+
 // ===========================
 // GRID RENDERING
 // ===========================
 
-function cellPx(n) {
-  const maxGrid = Math.min(window.innerWidth - 40, 500);
-  return Math.max(28, Math.floor((maxGrid - (n + 1) * 2) / n));
-}
-
 function renderGrid() {
   const { n, grid, clues, errors } = G;
   const el = document.getElementById('grid');
-  const px = cellPx(n);
-  el.style.gridTemplateColumns = `repeat(${n}, ${px}px)`;
+  el.style.gridTemplateColumns = `repeat(${n}, minmax(0, 1fr))`;
+  el.setAttribute('aria-label', `${n} by ${n} Takuzu grid`);
   el.innerHTML = '';
 
   for (let i = 0; i < n * n; i++) {
     const cell = document.createElement('div');
     cell.className = 'cell';
-    cell.style.cssText = `width:${px}px;height:${px}px;font-size:${Math.floor(px * 0.42)}px`;
+    cell.setAttribute('role', 'gridcell');
 
     const v = grid[i];
     if (v === 0) cell.classList.add('v0');
@@ -871,7 +936,21 @@ function renderGrid() {
     if (i === G.selected) cell.classList.add('selected');
     if (v !== EMPTY) cell.textContent = v;
 
-    if (!clues[i]) cell.addEventListener('click', () => onCellClick(i));
+    const row = Math.floor(i / n) + 1;
+    const column = (i % n) + 1;
+    const value = v === EMPTY ? 'empty' : String(v);
+    cell.setAttribute('aria-label', `Row ${row}, column ${column}: ${clues[i] ? `clue ${value}` : value}`);
+    cell.setAttribute('aria-readonly', clues[i] ? 'true' : 'false');
+
+    if (!clues[i]) {
+      cell.tabIndex = 0;
+      cell.addEventListener('focus', () => {
+        el.querySelector('.selected')?.classList.remove('selected');
+        G.selected = i;
+        cell.classList.add('selected');
+      });
+      cell.addEventListener('click', () => onCellClick(i));
+    }
     el.appendChild(cell);
   }
 }
@@ -960,7 +1039,7 @@ function clearCells() {
   }
   G.won = false;
   renderGrid();
-  setStatus('');
+  setStatus(puzzleLabel());
 }
 
 // ===========================
@@ -969,8 +1048,12 @@ function clearCells() {
 
 document.querySelectorAll('.size-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.size-btn').forEach(b => {
+      b.classList.remove('active');
+      b.setAttribute('aria-pressed', 'false');
+    });
     btn.classList.add('active');
+    btn.setAttribute('aria-pressed', 'true');
     G.n = parseInt(btn.dataset.size);
     startGame();
   });
@@ -978,8 +1061,12 @@ document.querySelectorAll('.size-btn').forEach(btn => {
 
 document.querySelectorAll('.diff-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.diff-btn').forEach(b => {
+      b.classList.remove('active');
+      b.setAttribute('aria-pressed', 'false');
+    });
     btn.classList.add('active');
+    btn.setAttribute('aria-pressed', 'true');
     G.difficulty = btn.dataset.diff;
     startGame();
   });
@@ -990,12 +1077,6 @@ document.getElementById('check-btn').addEventListener('click', checkBoard);
 document.getElementById('hint-btn').addEventListener('click', giveHint);
 document.getElementById('solve-btn').addEventListener('click', solveAll);
 document.getElementById('clear-btn').addEventListener('click', clearCells);
-
-let resizeTimer;
-window.addEventListener('resize', () => {
-  clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(renderGrid, 150);
-});
 
 // Keyboard support
 function moveSelection(dc, dr) {

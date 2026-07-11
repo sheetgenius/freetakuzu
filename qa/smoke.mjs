@@ -14,6 +14,8 @@ const paths = [
 
 console.log(`QA smoke - ${baseUrl}`);
 
+let rootHtml = "";
+
 for (const { request, canonical } of paths) {
   const res = await fetch(`${baseUrl}${request}`);
   assert.equal(res.status, 200, `${request} returned ${res.status}`);
@@ -21,7 +23,15 @@ for (const { request, canonical } of paths) {
   assert.match(html, /<!DOCTYPE html>/i, `${request} missing doctype`);
   assert.match(html, new RegExp(`<link rel="canonical" href="${escapeRegex(canonical)}"`), `${request} canonical mismatch`);
   assert.match(html, /application\/ld\+json/i, `${request} missing JSON-LD`);
+  if (request === "/") rootHtml = html;
 }
+
+assert.match(rootHtml, /<h1 id="page-title">Fill the grid\. Keep every line unique\.<\/h1>/, "root missing clear game promise");
+assert.match(rootHtml, /@media \(prefers-color-scheme: dark\)/, "root missing dark color scheme");
+assert.match(rootHtml, /aria-label="8 by 8 Takuzu grid" aria-busy="true"/, "root missing accessible game state");
+assert.match(rootHtml, /https:\/\/company\.sheetgenius\.com\//, "root missing SheetGenius attribution");
+assert.doesNotMatch(rootHtml, /More Free Tools/, "root includes unrelated tool directory");
+assert.doesNotMatch(rootHtml, /sends nothing to any server/i, "root includes an overbroad privacy claim");
 
 const sitemapRes = await fetch(`${baseUrl}/sitemap.xml`);
 assert.equal(sitemapRes.status, 200, `sitemap returned ${sitemapRes.status}`);
