@@ -23,6 +23,7 @@ for (const { request, canonical } of paths) {
   assert.match(html, /<!DOCTYPE html>/i, `${request} missing doctype`);
   assert.match(html, new RegExp(`<link rel="canonical" href="${escapeRegex(canonical)}"`), `${request} canonical mismatch`);
   assert.match(html, /application\/ld\+json/i, `${request} missing JSON-LD`);
+  assert.match(html, /href="https:\/\/bitterdesk\.com\/"/, `${request} support destination mismatch`);
   if (request === "/") rootHtml = html;
 }
 
