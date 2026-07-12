@@ -2,7 +2,7 @@
 
 ## What it does
 
-Browser-based Takuzu (Binairo) puzzle game. Generates and presents Takuzu puzzles of varying sizes (6×6, 8×8, 10×10) and difficulties. Runs entirely client-side — no backend, no data stored.
+Browser-based Takuzu (Binairo) puzzle game. Generates and presents Takuzu puzzles of varying sizes (6×6, 8×8, 10×10) and difficulties. Puzzle generation and game state run in the browser, with no product account or game backend. Public pages use Google Analytics, so ordinary web and analytics requests still occur.
 
 ## Puzzle rules
 
